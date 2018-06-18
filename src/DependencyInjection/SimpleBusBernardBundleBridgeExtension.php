@@ -3,8 +3,9 @@
 namespace SimpleBus\BernardBundleBridge\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\DefinitionDecorator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
@@ -80,9 +81,10 @@ class SimpleBusBernardBundleBridgeExtension extends ConfigurableExtension implem
     private function configureQueueResolverForType(array $config, ContainerBuilder $container, $type)
     {
         $queueNameResolver = $config['queue_name_resolver'];
+        $defitionClassname = $this->getDefinitionClassname();
 
         if (in_array($queueNameResolver, ['fixed', 'class_based', 'mapped'])) {
-            $definition = new DefinitionDecorator(sprintf('simple_bus.bernard_bundle_bridge.routing.%s_queue_name_resolver', $queueNameResolver));
+            $definition = new $defitionClassname(sprintf('simple_bus.bernard_bundle_bridge.routing.%s_queue_name_resolver', $queueNameResolver));
 
             if ($queueNameResolver === 'fixed') {
                 $definition->replaceArgument(0, $config['queue_name']);
@@ -129,5 +131,10 @@ class SimpleBusBernardBundleBridgeExtension extends ConfigurableExtension implem
         if (!isset($container->getParameter('kernel.bundles')[$bundleName])) {
             throw new \LogicException(sprintf('You need to enable "%s" as well', $bundleName));
         }
+    }
+
+    private function getDefinitionClassname()
+    {
+        return class_exists(ChildDefinition::class) ? ChildDefinition::class : DefinitionDecorator::class;
     }
 }
