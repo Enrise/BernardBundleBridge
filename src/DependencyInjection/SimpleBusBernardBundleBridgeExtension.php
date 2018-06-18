@@ -61,7 +61,6 @@ class SimpleBusBernardBundleBridgeExtension extends ConfigurableExtension implem
             }
         }
 
-        // Enable logging.
         if (!empty($config['logger'])) {
             $loader->load('logging.xml');
             $container
