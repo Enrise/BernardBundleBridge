@@ -25,9 +25,6 @@ class SimpleBusBernardBundleBridgeExtensionTest extends AbstractExtensionTestCas
             $serviceId = sprintf('simple_bus.bernard_bundle_bridge.routing.%s_queue_name_resolver', $type);
             $this->assertContainerBuilderHasService($serviceId);
         }
-
-        // No other services are registered.
-        $this->assertCount(3, $this->container->getDefinitions());
     }
 
     /**
